@@ -65,7 +65,9 @@ class IpnListener {
      */
     public $timeout = 30;       
     
+	private $_errors = array();
     private $post_data;
+	private $rawPostData;				// raw data from php://input
     private $post_uri = '';     
     private $response_status = '';
     private $response = '';
@@ -81,9 +83,12 @@ class IpnListener {
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
+	 *  @todo add URL param so function is more dynamic
+	 *
      *  @param  string  The post data as a URL encoded string
      */
-    protected function curlPost($encoded_data) {
+    protected function curlPost($encoded_data)
+	{
 
         if ($this->use_ssl) {
             $uri = 'https://'.$this->getPaypalHost().'/cgi-bin/webscr';
@@ -97,7 +102,7 @@ class IpnListener {
 
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cert/ca-bundle.crt');
+		curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cert/api_cert_chain.crt');
         curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
@@ -114,6 +119,8 @@ class IpnListener {
             $errstr = curl_error($ch);
             throw new Exception("cURL error: [$errno] $errstr");
         }
+		
+		return $this->response;		// function should return it's data itself
     }
     
     /**
@@ -124,9 +131,12 @@ class IpnListener {
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
+	 *  @todo add URL param so function is more dynamic
+	 *
      *  @param  string  The post data as a URL encoded string
      */
-    protected function fsockPost($encoded_data) {
+    protected function fsockPost($encoded_data)
+	{
     
         if ($this->use_ssl) {
             $uri = 'ssl://'.$this->getPaypalHost();
@@ -164,6 +174,7 @@ class IpnListener {
         } 
         
         fclose($fp);
+		return $this->response;		// function should return it's data itself
     }
     
     private function getPaypalHost()
@@ -171,6 +182,26 @@ class IpnListener {
 		return ($this->use_sandbox) ? self::SANDBOX_HOST : self::PAYPAL_HOST;
     }
     
+	public function getErrors()
+	{
+		return $this->_errors;
+	}
+	
+	private function addError($error)
+	{
+		$this->_errors[] .= $error;
+	}
+	
+	public function getPostData()
+	{
+		return $this->post_data;
+	}
+	
+	public function getRawPostData()
+	{
+		return $this->rawPostData;
+	}
+	
     /**
      *  Get POST URI
      *
@@ -180,7 +211,8 @@ class IpnListener {
      *
      *  @return string
      */
-    public function getPostUri() {
+    public function getPostUri()
+	{
         return $this->post_uri;
     }
     
@@ -192,7 +224,8 @@ class IpnListener {
      *
      *  @return string
      */
-    public function getResponse() {
+    public function getResponse()
+	{
         return $this->response;
     }
     
@@ -204,7 +237,8 @@ class IpnListener {
      *
      *  @return string
      */
-    public function getResponseStatus() {
+    public function getResponseStatus()
+	{
         return $this->response_status;
     }
     
@@ -217,7 +251,8 @@ class IpnListener {
      *
      *  @return string
      */
-    public function getTextReport() {
+    public function getTextReport()
+	{
         
         $r = '';
         
@@ -255,41 +290,77 @@ class IpnListener {
      *
      *  @return boolean
      */    
-    public function processIpn($post_data=null) {
+    public function processIpn($post_data=null)
+	{
+		try
+		{
+			$this->requirePostMethod();		// processIpn() should check itself if data is POST
+			
+			// Read POST data
+			// reading posted data directly from $_POST causes serialization
+			// issues with array data in POST. Reading raw POST data from input stream instead.
+			if ($post_data === null) {
+				$raw_post_data = file_get_contents('php://input');
+			} else {
+				$raw_post_data = $post_data;
+			}
+			$this->rawPostData = $raw_post_data;							// set raw post data for Class use
+			
+			// if post_data is php input stream, make it an array.
+			if ( ! is_array($raw_post_data) ) {
+				$raw_post_array = explode('&', $raw_post_data);
+				$this->post_data = $raw_post_array;								// use post array because it's same as $_POST
+			} else {
+				$this->post_data = $raw_post_data;								// use post array because it's same as $_POST
+			}
+			
+			$myPost = array();
+			foreach ($raw_post_array as $keyval) {
+				$keyval = explode ('=', $keyval);
+				if (count($keyval) == 2) {
+					$myPost[$keyval[0]] = urldecode($keyval[1]);
+				}
+			}
+			
+			// read the post from PayPal system and add 'cmd'
+			$req = 'cmd=_notify-validate';
+			if(function_exists('get_magic_quotes_gpc')) {
+				$get_magic_quotes_exists = true;
+			}
+			
+			foreach ($myPost as $key => $value) {
+				if($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+					$value = urlencode(stripslashes($value));
+				} else {
+					$value = urlencode($value);
+				}
+				$req .= "&$key=$value";
+			}
 
-        $encoded_data = 'cmd=_notify-validate';
-        
-        if ($post_data === null) { 
-            // use raw POST data 
-            if (!empty($_POST)) {
-                $this->post_data = $_POST;
-                $encoded_data .= '&'.file_get_contents('php://input');
-            } else {
-                throw new Exception("No POST data found.");
-            }
-        } else { 
-            // use provided data array
-            $this->post_data = $post_data;
-            
-            foreach ($this->post_data as $key => $value) {
-                $encoded_data .= "&$key=".urlencode($value);
-            }
-        }
-
-        if ($this->use_curl) $this->curlPost($encoded_data); 
-        else $this->fsockPost($encoded_data);
-        
-        if (strpos($this->response_status, '200') === false) {
-            throw new Exception("Invalid response status: ".$this->response_status);
-        }
-        
-        if (strpos($this->response, "VERIFIED") !== false) {
-            return true;
-        } elseif (strpos($this->response, "INVALID") !== false) {
-            return false;
-        } else {
-            throw new Exception("Unexpected response from PayPal.");
-        }
+			if ($this->use_curl) {
+				$res = $this->curlPost($req);
+			} else {
+				$res = $this->fsockPost($req);
+			}
+			
+			if (strpos($res, '200') === false) {
+				throw new Exception("Invalid response status: " . $res);
+			}		
+			
+			// Split response headers and payload, a better way for strcmp
+			$tokens = explode("\r\n\r\n", trim($res));
+			$res = trim(end($tokens));
+			if (strcmp ($res, "VERIFIED") == 0) {
+				return true;
+			} else if (strcmp ($res, "INVALID") == 0) {
+				return false;
+			} else {
+				throw new Exception("Unexpected response from PayPal.");
+			}
+		} catch (Exception $e) {
+			$this->addError($e->getMessage());
+		}
+		return false;
     }
     
     /**
@@ -298,12 +369,14 @@ class IpnListener {
      *  Throws an exception and sets a HTTP 405 response header if the request
      *  method was not POST. 
      */    
-    public function requirePostMethod() {
+    public function requirePostMethod()
+	{
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] != 'POST') {
             header('Allow: POST', true, 405);
             throw new Exception("Invalid HTTP request method.");
         }
     }
+	
 }
 
