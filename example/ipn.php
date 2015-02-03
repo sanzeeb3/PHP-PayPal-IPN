@@ -13,10 +13,10 @@
  *  @forked     https://github.com/Quixotix/PHP-PayPal-IPN
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
- *  @version    1.0
+ *  @version    2.2.0
  *  @license    http://opensource.org/licenses/gpl-3.0.html
  */
- 
+
 // TODO: I hate 'ini_set', fix this later
 ini_set('log_errors', true);
 ini_set('error_log', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'ipn_errors.log');
