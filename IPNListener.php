@@ -14,7 +14,7 @@
  *  @forked     https://github.com/Quixotix/PHP-PayPal-IPN
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
- *  @license    LICENSE
+ *  @license    http://choosealicense.com/licenses/gpl-2.0/
  *  @version    2.2.0
  */
 namespace WadeShuler;

@@ -13,8 +13,8 @@
  *  @forked     https://github.com/Quixotix/PHP-PayPal-IPN
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
+ *  @license    http://choosealicense.com/licenses/gpl-2.0/
  *  @version    2.2.0
- *  @license    http://opensource.org/licenses/gpl-3.0.html
  */
 
 // TODO: I hate 'ini_set', fix this later
