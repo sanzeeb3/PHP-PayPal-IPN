@@ -68,7 +68,7 @@ below. For a more thoroughly documented example, take a look at the
 
     include('IPNListener.php');
 
-    $listener = new IPNListener();
+    $listener = new WadeShuler\IPNListener();
     $listener->use_sandbox = true;
 
     if ($verified = $listener->processIpn())
