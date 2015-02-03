@@ -1,6 +1,19 @@
 PHP-PayPal-IPN
 ==============
 
+Forked from: https://github.com/Quixotix/PHP-PayPal-IPN/
+
+Forked from the great Quixotix PayPal IPN script. This fork plans to
+fix the current issues with the original repo, as well as update the code
+for use according to PayPal's documentation, and today's standards.
+
+**Example:** https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
+Many changes to how PayPal shows us how to process an IPN, such as grabbing from
+the input stream instead of the $_POST global. Implementing a cert. Fixing
+force_ssl_v3 (POODLE). And many more fixes and updates.
+
+(original readme below)
+
 A PayPal Instant Payment Notification (IPN) class for PHP 5. 
 
 Use the `IpnListener` class in your PHP IPN script to handle the encoding 
