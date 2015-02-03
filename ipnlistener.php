@@ -166,9 +166,9 @@ class IpnListener {
         fclose($fp);
     }
     
-    private function getPaypalHost() {
-        if ($this->use_sandbox) return self::SANDBOX_HOST;
-        else return self::PAYPAL_HOST;
+    private function getPaypalHost()
+	{
+		return ($this->use_sandbox) ? self::SANDBOX_HOST : self::PAYPAL_HOST;
     }
     
     /**
