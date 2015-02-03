@@ -30,15 +30,7 @@ class IpnListener {
      *
      *  @var boolean
      */
-    public $use_curl = true;     
-    
-    /**
-     *  If true, explicitly sets cURL to use SSL version 3. Use this if cURL
-     *  is compiled with GnuTLS SSL.
-     *
-     *  @var boolean
-     */
-    public $force_ssl_v3 = true;     
+    public $use_curl = true;
    
     /**
      *  If true, cURL will use the CURLOPT_FOLLOWLOCATION to follow any 
@@ -113,10 +105,6 @@ class IpnListener {
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
-        
-        if ($this->force_ssl_v3) {
-            curl_setopt($ch, CURLOPT_SSLVERSION, 3);
-        }
         
         $this->response = curl_exec($ch);
         $this->response_status = strval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
