@@ -27,6 +27,20 @@ A PayPal Instant Payment Notification (IPN) class for PHP >= 5.3 (if you aren't 
 
 Use the `IPNListener` class in your PHP IPN script to handle the encoding of POST data, post back to PayPal, and parsing of the response from PayPal.
 
+Install with Composer
+---------------------
+
+Composer is now supported!
+
+Packagist: https://packagist.org/packages/wadeshuler/php-paypal-ipn
+
+composer.json
+
+    {
+        "require": {
+            "wadeshuler/php-paypal-ipn": "*"
+        }
+    }
 
 Features
 --------
