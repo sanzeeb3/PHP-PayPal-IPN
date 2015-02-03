@@ -5,12 +5,22 @@
  *  A class to listen for and handle Instant Payment Notifications (IPN) from 
  *  the PayPal server.
  *
- *  https://github.com/Quixotix/PHP-PayPal-IPN
+ *  Forked from the great Quixotix PayPal IPN script. This fork plans to
+ *  fix the current issues with the original repo, as well as update the code
+ *  for use according to PayPal's documentation, and today's standards.
+ *
+ *  Example: https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
+ *  Many changes to how PayPal shows us how to process an IPN, such as grabbing from
+ *  the input stream instead of the $_POST global. Implementing a cert. Fixing
+ *  force_ssl_v3 (POODLE). And many more fixes and updates.
  *
  *  @package    PHP-PayPal-IPN
- *  @author     Micah Carrick
- *  @copyright  (c) 2012 - Micah Carrick
- *  @version    2.1.0
+ *  @link       https://github.com/WadeShuler/PHP-PayPal-IPN
+ *  @forked     https://github.com/Quixotix/PHP-PayPal-IPN
+ *  @author     Wade Shuler
+ *  @copyright  Copyright (c) 2015, Wade Shuler
+ *  @license    LICENSE
+ *  @version    1.0
  */
 class IpnListener {
     
@@ -95,8 +105,7 @@ class IpnListener {
 
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_CAINFO, 
-		            dirname(__FILE__)."/cert/api_cert_chain.crt");
+		curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cert/api_cert_chain.crt');
         curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
