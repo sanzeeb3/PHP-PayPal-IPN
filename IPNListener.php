@@ -17,9 +17,6 @@
  *  @license    http://choosealicense.com/licenses/gpl-2.0/
  *  @version    2.2.0
  */
-namespace WadeShuler;
-
-class Exception extends \Exception { }
 
 class IPNListener
 {
@@ -117,7 +114,7 @@ class IPNListener
         if ($this->response === false || $this->response_status == '0') {
             $errno = curl_errno($ch);
             $errstr = curl_error($ch);
-            throw new \Exception("cURL error: [$errno] $errstr");
+            throw new Exception("cURL error: [$errno] $errstr");
         }
 
 		return $this->response;		// function should return it's data itself
@@ -152,7 +149,7 @@ class IPNListener
 
         if (!$fp) {
             // fsockopen error
-            throw new \Exception("fsockopen error: [$errno] $errstr");
+            throw new Exception("fsockopen error: [$errno] $errstr");
         }
 
         $header = "POST /cgi-bin/webscr HTTP/1.1\r\n";
@@ -344,7 +341,7 @@ class IPNListener
 			}
 
 			if (strpos($res, '200') === false) {
-				throw new \Exception("Invalid response status: " . $res);
+				throw new Exception("Invalid response status: " . $res);
 			}
 
 			// Split response headers and payload, a better way for strcmp
@@ -355,7 +352,7 @@ class IPNListener
 			} else if (strcmp ($res, "INVALID") == 0) {
 				return false;
 			} else {
-				throw new \Exception("Unexpected response from PayPal.");
+				throw new Exception("Unexpected response from PayPal.");
 			}
 		} catch (Exception $e) {
 			$this->addError($e->getMessage());
@@ -375,7 +372,7 @@ class IPNListener
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] != 'POST') {
             header('Allow: POST', true, 405);
-            throw new \Exception("Invalid HTTP request method.");
+            throw new Exception("Invalid HTTP request method.");
         }
     }
 

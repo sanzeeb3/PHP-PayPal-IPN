@@ -80,9 +80,9 @@ below. For a more thoroughly documented example, take a look at the
 
     <?php
 
-    include('IPNListener.php');
+    include('/path/to/IPNListener.php');
 
-    $listener = new WadeShuler\IPNListener();
+    $listener = new IPNListener();
     $listener->use_sandbox = true;
 
     if ($verified = $listener->processIpn())
