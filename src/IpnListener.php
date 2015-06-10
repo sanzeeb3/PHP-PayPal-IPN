@@ -20,6 +20,8 @@
 
 namespace WadeShuler\PhpPaypalIpn;
 
+use Exception;
+
 class IpnListener
 {
 
