@@ -80,9 +80,9 @@ below. For a more thoroughly documented example, take a look at the
 
     <?php
 
-    include('/path/to/IPNListener.php');
+    require_once('vendor/autoload.php');
 
-    $listener = new IPNListener();
+    $listener = new \WadeShuler\PhpPaypalIpn\IpnListener();
     $listener->use_sandbox = true;
 
     if ($verified = $listener->processIpn())
