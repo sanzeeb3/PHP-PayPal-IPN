@@ -42,15 +42,6 @@ class IpnListener
     public $follow_location = false;
 
     /**
-     *  If true, an SSL secure connection (port 443) is used for the post back
-     *  as recommended by PayPal. If false, a standard HTTP (port 80) connection
-     *  is used. Default true.
-     *
-     *  @var boolean
-     */
-    public $use_ssl = true;
-
-    /**
      *  If true, the paypal sandbox URI www.sandbox.paypal.com is used for the
      *  post back. If false, the live URI www.paypal.com is used. Default false.
      *
@@ -91,13 +82,8 @@ class IpnListener
     protected function curlPost($encoded_data)
 	{
 
-        if ($this->use_ssl) {
-            $uri = 'https://'.$this->getPaypalHost().'/cgi-bin/webscr';
-            $this->post_uri = $uri;
-        } else {
-            $uri = 'http://'.$this->getPaypalHost().'/cgi-bin/webscr';
-            $this->post_uri = $uri;
-        }
+        $uri = 'https://'.$this->getPaypalHost().'/cgi-bin/webscr';
+        $this->post_uri = $uri;
 
         $ch = curl_init();
 
@@ -139,15 +125,9 @@ class IpnListener
     protected function fsockPost($encoded_data)
 	{
 
-        if ($this->use_ssl) {
-            $uri = 'ssl://'.$this->getPaypalHost();
-            $port = '443';
-            $this->post_uri = $uri.'/cgi-bin/webscr';
-        } else {
-            $uri = $this->getPaypalHost(); // no "http://" in call to fsockopen()
-            $port = '80';
-            $this->post_uri = 'http://'.$uri.'/cgi-bin/webscr';
-        }
+        $uri = 'ssl://'.$this->getPaypalHost();
+        $port = '443';
+        $this->post_uri = $uri.'/cgi-bin/webscr';
 
         $fp = fsockopen($uri, $port, $errno, $errstr, $this->timeout);
 
