@@ -18,7 +18,11 @@
  *  @version    2.2.0
  */
 
-class IPNListener
+namespace WadeShuler\PhpPaypalIpn;
+
+use Exception;
+
+class IpnListener
 {
 
     /**
