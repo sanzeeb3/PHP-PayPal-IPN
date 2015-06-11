@@ -58,15 +58,15 @@ class IpnListener
     public $timeout = 30;
 
     /**
-     * If true, enabled SSL certification validation when using cURL
+     * If true, enable SSL certification validation when using cURL
      *
      * @var boolean
      */
     public $verify_ssl = true;
 
-	private $_errors = array();
+    private $_errors = array();
     private $post_data;
-	private $rawPostData;				// raw data from php://input
+    private $rawPostData;				// raw data from php://input
     private $post_uri = '';
     private $response_status = '';
     private $response = '';
