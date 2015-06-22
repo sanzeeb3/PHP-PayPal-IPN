@@ -14,12 +14,7 @@
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
  *  @license    http://choosealicense.com/licenses/gpl-2.0/
- *  @version    2.2.0
  */
-
-// TODO: I hate 'ini_set', fix this later
-ini_set('log_errors', true);
-ini_set('error_log', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'ipn_errors.log');
 
 // include the IPNListener Class
 require_once( dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IPNListener.php');
