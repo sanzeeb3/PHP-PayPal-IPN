@@ -15,7 +15,7 @@
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
  *  @license    http://choosealicense.com/licenses/gpl-2.0/
- *  @version    2.2.0
+ *  @version    2.5.0
  */
 
 namespace WadeShuler\PhpPaypalIpn;
@@ -82,13 +82,12 @@ class IpnListener
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
-	 *  @todo add URL param so function is more dynamic
-	 *
+     *  @todo add URL param so function is more dynamic
+     *
      *  @param  string  The post data as a URL encoded string
      */
     protected function curlPost($encoded_data)
-	{
-
+    {
         $uri = 'https://'.$this->getPaypalHost().'/cgi-bin/webscr';
         $this->post_uri = $uri;
 
@@ -97,8 +96,9 @@ class IpnListener
         if ($this->verify_ssl) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-    		curl_setopt($ch, CURLOPT_CAINFO, dirname(dirname(__FILE__)) . '/cert/api_cert_chain.crt');
+            curl_setopt($ch, CURLOPT_CAINFO, dirname(dirname(__FILE__)) . '/cert/api_cert_chain.crt');
         }
+
         curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
@@ -116,7 +116,7 @@ class IpnListener
             throw new Exception("cURL error: [$errno] $errstr");
         }
 
-		return $this->response;		// function should return it's data itself
+        return $this->response;
     }
 
     /**
@@ -127,12 +127,12 @@ class IpnListener
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
-	 *  @todo add URL param so function is more dynamic
-	 *
+     *  @todo add URL param so function is more dynamic
+     *
      *  @param  string  The post data as a URL encoded string
      */
     protected function fsockPost($encoded_data)
-	{
+    {
 
         $uri = 'ssl://'.$this->getPaypalHost();
         $port = '443';
@@ -164,33 +164,33 @@ class IpnListener
         }
 
         fclose($fp);
-		return $this->response;		// function should return it's data itself
+        return $this->response;
     }
 
     private function getPaypalHost()
-	{
-		return ($this->use_sandbox) ? self::SANDBOX_HOST : self::PAYPAL_HOST;
+    {
+        return ($this->use_sandbox) ? self::SANDBOX_HOST : self::PAYPAL_HOST;
     }
 
-	public function getErrors()
-	{
-		return $this->_errors;
-	}
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
 
-	private function addError($error)
-	{
-		$this->_errors[] .= $error;
-	}
+    private function addError($error)
+    {
+        $this->_errors[] .= $error;
+    }
 
-	public function getPostData()
-	{
-		return $this->post_data;
-	}
+    public function getPostData()
+    {
+        return $this->post_data;
+    }
 
-	public function getRawPostData()
-	{
-		return $this->rawPostData;
-	}
+    public function getRawPostData()
+    {
+        return $this->rawPostData;
+    }
 
     /**
      *  Get POST URI
@@ -202,7 +202,7 @@ class IpnListener
      *  @return string
      */
     public function getPostUri()
-	{
+    {
         return $this->post_uri;
     }
 
@@ -215,7 +215,7 @@ class IpnListener
      *  @return string
      */
     public function getResponse()
-	{
+    {
         return $this->response;
     }
 
@@ -228,7 +228,7 @@ class IpnListener
      *  @return string
      */
     public function getResponseStatus()
-	{
+    {
         return $this->response_status;
     }
 
@@ -242,15 +242,18 @@ class IpnListener
      *  @return string
      */
     public function getTextReport()
-	{
+    {
 
         $r = '';
 
         // date and POST url
         for ($i=0; $i<80; $i++) { $r .= '-'; }
         $r .= "\n[".date('m/d/Y g:i A').'] - '.$this->getPostUri();
-        if ($this->use_curl) $r .= " (curl)\n";
-        else $r .= " (fsockopen)\n";
+        if ($this->use_curl) {
+            $r .= " (curl)\n";
+        } else {
+            $r .= " (fsockopen)\n";
+        }
 
         // HTTP Response
         for ($i=0; $i<80; $i++) { $r .= '-'; }
@@ -281,30 +284,30 @@ class IpnListener
      *  @return boolean
      */
     public function processIpn($post_data=null)
-	{
-		try
-		{
-			$this->requirePostMethod();		// processIpn() should check itself if data is POST
+    {
+        try
+        {
+            $this->requirePostMethod();		// processIpn() should check itself if data is POST
 
-			// Read POST data
-			// reading posted data directly from $_POST causes serialization
-			// issues with array data in POST. Reading raw POST data from input stream instead.
-			if ($post_data === null) {
-				$raw_post_data = file_get_contents('php://input');
-			} else {
-				$raw_post_data = $post_data;
-			}
-			$this->rawPostData = $raw_post_data;							// set raw post data for Class use
+            // Read POST data
+            // reading posted data directly from $_POST causes serialization
+            // issues with array data in POST. Reading raw POST data from input stream instead.
+            if ($post_data === null) {
+                $raw_post_data = file_get_contents('php://input');
+            } else {
+                $raw_post_data = $post_data;
+            }
+            $this->rawPostData = $raw_post_data;							// set raw post data for Class use
 
-			// if post_data is php input stream, make it an array.
-			if ( ! is_array($raw_post_data) ) {
-				$raw_post_array = explode('&', $raw_post_data);
-				$this->post_data = $raw_post_array;								// use post array because it's same as $_POST
-			} else {
-				$this->post_data = $raw_post_data;								// use post array because it's same as $_POST
-			}
+            // if post_data is php input stream, make it an array.
+            if ( ! is_array($raw_post_data) ) {
+                $raw_post_array = explode('&', $raw_post_data);
+                $this->post_data = $raw_post_array;								// use post array because it's same as $_POST
+            } else {
+                $this->post_data = $raw_post_data;								// use post array because it's same as $_POST
+            }
 
-			$myPost = array();
+            $myPost = array();
             if (isset($raw_post_array)) {
                 foreach ($raw_post_array as $keyval) {
                     $keyval = explode('=', $keyval);
@@ -314,43 +317,43 @@ class IpnListener
                 }
             }
 
-			// read the post from PayPal system and add 'cmd'
-			$req = 'cmd=_notify-validate';
+            // read the post from PayPal system and add 'cmd'
+            $req = 'cmd=_notify-validate';
 
-			foreach ($myPost as $key => $value) {
-				if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() == 1) {
-					$value = urlencode(stripslashes($value));
-				} else {
-					$value = urlencode($value);
-				}
-				$req .= "&$key=$value";
-			}
+            foreach ($myPost as $key => $value) {
+                if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() == 1) {
+                    $value = urlencode(stripslashes($value));
+                } else {
+                    $value = urlencode($value);
+                }
+                $req .= "&$key=$value";
+            }
 
-			if ($this->use_curl) {
-				$res = $this->curlPost($req);
-			} else {
-				$res = $this->fsockPost($req);
-			}
+            if ($this->use_curl) {
+                $res = $this->curlPost($req);
+            } else {
+                $res = $this->fsockPost($req);
+            }
 
-			if (strpos($res, '200') === false) {
-				throw new Exception("Invalid response status: " . $res);
-			}
+            if (strpos($res, '200') === false) {
+                throw new Exception("Invalid response status: " . $res);
+            }
 
-			// Split response headers and payload, a better way for strcmp
-			$tokens = explode("\r\n\r\n", trim($res));
-			$res = trim(end($tokens));
-			if (strcmp ($res, "VERIFIED") == 0) {
-				return true;
-			} else if (strcmp ($res, "INVALID") == 0) {
-				return false;
-			} else {
-				throw new Exception("Unexpected response from PayPal.");
-			}
-		} catch (Exception $e) {
-			$this->addError($e->getMessage());
+            // Split response headers and payload, a better way for strcmp
+            $tokens = explode("\r\n\r\n", trim($res));
+            $res = trim(end($tokens));
+            if (strcmp ($res, "VERIFIED") == 0) {
+                return true;
+            } else if (strcmp ($res, "INVALID") == 0) {
+                return false;
+            } else {
+                throw new Exception("Unexpected response from PayPal.");
+            }
+        } catch (Exception $e) {
+            $this->addError($e->getMessage());
             return false;
-		}
-		return false;
+        }
+        return false;
     }
 
     /**
@@ -360,7 +363,7 @@ class IpnListener
      *  method was not POST.
      */
     public function requirePostMethod()
-	{
+    {
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] != 'POST') {
             header('Allow: POST', true, 405);
