@@ -4,7 +4,7 @@
     "homepage": "https://github.com/WadeShuler/PHP-PayPal-IPN",
     "keywords": ["paypal", "ipn", "php"],
     "license": "GPL-2.0+",
-    "version": "2.4.0",
+    "version": "2.5.0",
     "authors": [
         {
             "name": "Wade Shuler",
@@ -19,7 +19,6 @@
     "support": {
         "issues": "https://github.com/WadeShuler/PHP-PayPal-IPN/issues",
         "source": "https://github.com/WadeShuler/PHP-PayPal-IPN/"
-
     },
     "require": {
         "php": ">=5.3.0"
