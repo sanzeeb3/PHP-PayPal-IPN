@@ -1,4 +1,9 @@
 <?php
+
+namespace wadeshuler\paypalipn;
+
+use Exception;
+
 /**
  *  PayPal IPN Listener
  *
@@ -17,11 +22,6 @@
  *  @license    http://choosealicense.com/licenses/gpl-2.0/
  *  @version    2.5.0
  */
-
-namespace WadeShuler\PhpPaypalIpn;
-
-use Exception;
-
 class IpnListener
 {
 
