@@ -54,7 +54,7 @@ composer.json
     $listener->follow_location = false;
     $listener->timeout = 30;
     $listener->verify_ssl = true;
-    
+
     if ($verified = $listener->processIpn())
     {
         // handle successful ipn request
@@ -104,7 +104,7 @@ below. For a more thoroughly documented example, take a look at the
 
     require_once('vendor/autoload.php');
 
-    $listener = new \WadeShuler\PhpPaypalIpn\IpnListener();
+    $listener = new \wadeshuler\paypalipn\IpnListener();
     $listener->use_sandbox = true;
 
     if ($verified = $listener->processIpn())
