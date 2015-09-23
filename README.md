@@ -1,6 +1,8 @@
 PHP-PayPal-IPN
 ==============
 
+**WARNING:** Version 2.5.1+ has a different namespace! It is now `wadeshuler\paypalipn`!
+
 Forked from: https://github.com/Quixotix/PHP-PayPal-IPN/
 
 Forked from the great Quixotix PayPal IPN script, which is no longer maintained. From now on, you should use this repo instead, as I have adddressed it's issues and brought it back to life.
@@ -25,7 +27,7 @@ This fork fixes the known issues with the original repo, as well as updates the 
 
 A PayPal Instant Payment Notification (IPN) class for PHP >= 5.3 (if you aren't on at least 5.3, then I can't help you! I will not support dead versions!)
 
-Use the `IPNListener` class in your PHP IPN script to handle the encoding of POST data, post back to PayPal, and parsing of the response from PayPal.
+Use the `IpnListener` class in your PHP IPN script to handle the encoding of POST data, post back to PayPal, and parsing of the response from PayPal.
 
 Install with Composer
 ---------------------
@@ -41,6 +43,26 @@ composer.json
             "wadeshuler/php-paypal-ipn": "*"
         }
     }
+
+
+    use wadeshuler\paypalipn\IpnListener;
+    $listener = new IpnListener();
+
+    // default options
+    $listener->use_sandbox = true;
+    $listener->use_curl = true;
+    $listener->follow_location = false;
+    $listener->timeout = 30;
+    $listener->verify_ssl = true;
+    
+    if ($verified = $listener->processIpn())
+    {
+        // handle successful ipn request
+    } else {
+        // handle invalid ipn request
+    }
+
+Please see the example file in `example\ipn.php`
 
 Features
 --------
@@ -74,7 +96,7 @@ listener.
 [2]: https://developer.paypal.com
 
 Once you have your sandbox account setup, you simply create a PHP script that
-will be your IPN listener. In that script, use the `IPNListener()` class as shown
+will be your IPN listener. In that script, use the `IpnListener()` class as shown
 below. For a more thoroughly documented example, take a look at the
 `example/ipn.php` script in the source code.
 
@@ -108,8 +130,7 @@ Documentation
 -------------
 
 Documentation has not been generated yet, but, there are phpDocumentor style
-docstrings (comments) throughout `ipnlistener.php` which explain the important
-public properties and methods.
+docstrings (comments) throughout `IpnListener.php` which explain the important public properties and methods.
 
 I have also written a more in-depth IPN tutorial on my blog: [PayPal IPN with PHP][3]
 
