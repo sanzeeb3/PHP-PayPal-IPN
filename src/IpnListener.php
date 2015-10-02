@@ -20,7 +20,7 @@ use Exception;
  *  @author     Wade Shuler
  *  @copyright  Copyright (c) 2015, Wade Shuler
  *  @license    http://choosealicense.com/licenses/gpl-2.0/
- *  @version    2.5.0
+ *  @version    2.5.2
  */
 class IpnListener
 {
