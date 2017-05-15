@@ -369,7 +369,7 @@ class IpnListener
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] != 'POST') {
             header('Allow: POST', true, 405);
-            throw new Exception("Invalid HTTP request method.");
+            throw new Exception("Invalid HTTP request method (" . $_SERVER['REQUEST_METHOD'] . ") from " . $_SERVER['REMOTE_ADDR'] . " - " . $_SERVER['HTTP_USER_AGENT'] . ")");
         }
     }
 
