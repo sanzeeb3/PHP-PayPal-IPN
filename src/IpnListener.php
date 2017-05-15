@@ -263,8 +263,10 @@ class IpnListener
         for ($i=0; $i<80; $i++) { $r .= '-'; }
         $r .= "\n";
 
-        foreach ($this->post_data as $key => $value) {
-            $r .= str_pad($key, 25)."$value\n";
+        if (!empty($this->post_data)) {
+            foreach ($this->post_data as $key => $value) {
+                $r .= str_pad($key, 25)."$value\n";
+            }
         }
         $r .= "\n\n";
 
