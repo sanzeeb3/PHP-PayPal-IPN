@@ -27,7 +27,7 @@ class IpnListener
 
     /**
      *  If true, the recommended cURL PHP library is used to send the post back
-     *  to PayPal. If flase then fsockopen() is used. Default true.
+     *  to PayPal. If false then fsockopen() is used. Default true.
      *
      *  @var boolean
      */
